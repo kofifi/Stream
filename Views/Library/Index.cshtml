@@ -1,0 +1,34 @@
+﻿@{
+    ViewData["Title"] = "Lista bibliotek";
+}
+
+<div class="container mt-4">
+    <h2 class="mb-3">Lista bibliotek</h2>
+
+    <table class="table table-striped">
+        <thead class="table-light">
+        <tr>
+            <th>Id</th>
+            <th>Użytkownik</th>
+            <th>Gra</th>
+            <th>Status</th>
+            <th>Akcje</th>
+        </tr>
+        </thead>
+        <tbody>
+        @foreach (var library in Model)
+        {
+            <tr>
+                <td>@library.Id</td>
+                <td>@library.User?.Username</td>
+                <td>@library.Game?.Title</td>
+                <td>@library.Status</td>
+                <td>
+                    <a class="btn btn-primary" asp-action="Edit" asp-route-id="@library.Id">Edytuj</a>
+                    <a class="btn btn-info" asp-action="Details" asp-route-id="@library.Id">Szczegóły</a>
+                </td>
+            </tr>
+        }
+        </tbody>
+    </table>
+</div>

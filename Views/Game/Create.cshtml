@@ -1,0 +1,35 @@
+﻿@model Stream.Models.Game
+
+@{
+    ViewData["Title"] = "Dodaj grę";
+}
+
+<div class="container mt-4">
+    <h2 class="mb-3">Dodaj grę</h2>
+
+    <form asp-action="Create" method="post">
+        <div class="form-group">
+            <label asp-for="Title" class="control-label"></label>
+            <input asp-for="Title" class="form-control" />
+            <span asp-validation-for="Title" class="text-danger"></span>
+        </div>
+        <div class="form-group">
+            <label asp-for="ReleaseDate" class="control-label"></label>
+            <input asp-for="ReleaseDate" class="form-control" />
+            <span asp-validation-for="ReleaseDate" class="text-danger"></span>
+        </div>
+        <div class="form-group">
+            <label asp-for="Platform" class="control-label"></label>
+            <input asp-for="Platform" class="form-control" />
+            <span asp-validation-for="Platform" class="text-danger"></span>
+        </div>
+        <div class="form-group">
+            <label asp-for="Genre" class="control-label"></label>
+            <input asp-for="Genre" class="form-control" />
+            <span asp-validation-for="Genre" class="text-danger"></span>
+        </div>
+        <div class="form-group mt-3">
+            <input type="submit" value="Dodaj" class="btn btn-primary" />
+        </div>
+    </form>
+</div>

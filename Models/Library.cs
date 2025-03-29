@@ -9,17 +9,15 @@ namespace Stream.Models
         [Required]
         public int UserId { get; set; }
 
-        // Remove 'required' here
         public User? User { get; set; }
 
         [Required]
         public int GameId { get; set; }
 
-        // Remove 'required' here
         public Game? Game { get; set; }
 
         [Required]
+        [StringLength(100)]
         public string? Status { get; set; }
     }
-
 }
