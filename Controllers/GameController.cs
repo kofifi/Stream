@@ -30,7 +30,7 @@ namespace Stream.Controllers
             }
 
             var games = await _context.Games
-                .Where(g => g.Title.Contains(searchQuery) || g.Genre.Contains(searchQuery))
+                .Where(g => g.Title.Contains(searchQuery) || g.Genre.ToString().Contains(searchQuery))
                 .ToListAsync();
             return RedirectToAction(nameof(Index), new { searchQuery = searchQuery });
         }
@@ -44,7 +44,7 @@ namespace Stream.Controllers
                 var lowerSearchQuery = searchQuery.ToLower();
                 games = games.Where(g => 
                     (g.Title != null && g.Title.ToLower().Contains(lowerSearchQuery)) || 
-                    (g.Genre != null && g.Genre.ToLower().Contains(lowerSearchQuery))
+                    g.Genre.ToString().ToLower().Contains(lowerSearchQuery)
                 );
             }
 

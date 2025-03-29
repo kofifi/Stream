@@ -15,8 +15,8 @@ public static class ModelBuilderExtensions
 
         // Seed Games
         modelBuilder.Entity<Game>().HasData(
-            new Game { Id = 1, Title = "Game 1", ReleaseDate = new DateTime(2020, 1, 1), Platform = "PC", Genre = "Action", CreatedAt = createdAt },
-            new Game { Id = 2, Title = "Game 2", ReleaseDate = new DateTime(2021, 5, 15), Platform = "PlayStation", Genre = "Adventure", CreatedAt = createdAt }
+            new Game { Id = 1, Title = "Game 1", ReleaseDate = new DateTime(2020, 1, 1), Platform = Platform.PC, Genre = Genre.Action, CreatedAt = createdAt },
+            new Game { Id = 2, Title = "Game 2", ReleaseDate = new DateTime(2021, 5, 15), Platform = Platform.PlayStation, Genre = Genre.Adventure, CreatedAt = createdAt }
         );
 
         // Seed Libraries (set only foreign keys)

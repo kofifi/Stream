@@ -4,6 +4,7 @@ using Stream.Data;
 using Microsoft.EntityFrameworkCore;
 using System.Threading.Tasks;
 using System.Linq;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace Stream.Controllers
 {
@@ -20,6 +21,28 @@ namespace Stream.Controllers
         {
             var libraries = await _context.Libraries.Include(l => l.User).Include(l => l.Game).ToListAsync();
             return View(libraries);
+        }
+
+        public IActionResult Create()
+        {
+            ViewData["Users"] = new SelectList(_context.Users, "Id", "Username");
+            ViewData["Games"] = new SelectList(_context.Games, "Id", "Title");
+            return View();
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Create(Library library)
+        {
+            if (ModelState.IsValid)
+            {
+                _context.Add(library);
+                await _context.SaveChangesAsync();
+                return RedirectToAction(nameof(Index));
+            }
+            ViewData["Users"] = new SelectList(_context.Users, "Id", "Username", library.UserId);
+            ViewData["Games"] = new SelectList(_context.Games, "Id", "Title", library.GameId);
+            return View(library);
         }
 
         public async Task<IActionResult> Edit(int id)

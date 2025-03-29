@@ -1,0 +1,25 @@
+﻿@model Stream.Models.Library
+
+@{
+    ViewData["Title"] = "Dodaj grę do biblioteki użytkownika";
+}
+
+<h2>@ViewData["Title"]</h2>
+
+<form asp-action="Create">
+    <div class="form-group">
+        <label asp-for="UserId" class="control-label">Użytkownik</label>
+        <select asp-for="UserId" class="form-control" asp-items="ViewBag.Users"></select>
+    </div>
+    <div class="form-group">
+        <label asp-for="GameId" class="control-label">Gra</label>
+        <select asp-for="GameId" class="form-control" asp-items="ViewBag.Games"></select>
+    </div>
+    <div class="form-group">
+        <label asp-for="Status" class="control-label">Status</label>
+        <input asp-for="Status" class="form-control" />
+    </div>
+    <div class="form-group">
+        <input type="submit" value="Dodaj" class="btn btn-primary" />
+    </div>
+</form>

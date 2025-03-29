@@ -14,12 +14,11 @@ namespace Stream.Models
         public DateTime? ReleaseDate { get; set; }
 
         [Required]
-        public string? Platform { get; set; }
+        public Platform Platform { get; set; }
 
         [Required]
-        public string? Genre { get; set; }
+        public Genre Genre { get; set; }
 
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     }
-
 }

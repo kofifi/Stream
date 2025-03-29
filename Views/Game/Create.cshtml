@@ -20,12 +20,12 @@
         </div>
         <div class="form-group">
             <label asp-for="Platform" class="control-label"></label>
-            <input asp-for="Platform" class="form-control" />
+            <select asp-for="Platform" class="form-control" asp-items="Html.GetEnumSelectList<Stream.Models.Platform>()"></select>
             <span asp-validation-for="Platform" class="text-danger"></span>
         </div>
         <div class="form-group">
             <label asp-for="Genre" class="control-label"></label>
-            <input asp-for="Genre" class="form-control" />
+            <select asp-for="Genre" class="form-control" asp-items="Html.GetEnumSelectList<Stream.Models.Genre>()"></select>
             <span asp-validation-for="Genre" class="text-danger"></span>
         </div>
         <div class="form-group mt-3">
