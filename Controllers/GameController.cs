@@ -16,10 +16,56 @@ namespace Stream.Controllers
             _context = context;
         }
 
-        public async Task<IActionResult> Index()
+        public IActionResult Search()
         {
-            var games = await _context.Games.ToListAsync();
-            return View(games);
+            return View();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Search(string searchQuery)
+        {
+            if (string.IsNullOrEmpty(searchQuery))
+            {
+                return RedirectToAction(nameof(Index));
+            }
+
+            var games = await _context.Games
+                .Where(g => g.Title.Contains(searchQuery) || g.Genre.Contains(searchQuery))
+                .ToListAsync();
+            return RedirectToAction(nameof(Index), new { searchQuery = searchQuery });
+        }
+
+        public async Task<IActionResult> Index(string searchQuery)
+        {
+            var games = _context.Games.AsQueryable();
+
+            if (!string.IsNullOrEmpty(searchQuery))
+            {
+                var lowerSearchQuery = searchQuery.ToLower();
+                games = games.Where(g => 
+                    (g.Title != null && g.Title.ToLower().Contains(lowerSearchQuery)) || 
+                    (g.Genre != null && g.Genre.ToLower().Contains(lowerSearchQuery))
+                );
+            }
+
+            ViewData["SearchQuery"] = searchQuery;
+
+            if (IsAjaxRequest())
+            {
+                return PartialView("_GameTablePartial", await games.ToListAsync());
+            }
+
+            return View(await games.ToListAsync());
+        }
+
+        public bool IsAjaxRequest()
+        {
+            return Request.Headers["X-Requested-With"] == "XMLHttpRequest";
+        }
+
+        public IActionResult ResetSearch()
+        {
+            return RedirectToAction(nameof(Index), new { searchQuery = string.Empty });
         }
 
         public IActionResult Create()
@@ -97,22 +143,14 @@ namespace Stream.Controllers
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             var game = await _context.Games.FindAsync(id);
-            if (game != null)
-            {
-                _context.Games.Remove(game);
-                await _context.SaveChangesAsync();
-            }
-            return RedirectToAction(nameof(Index));
-        }
-
-        public async Task<IActionResult> Details(int id)
-        {
-            var game = await _context.Games.FirstOrDefaultAsync(m => m.Id == id);
             if (game == null)
             {
                 return NotFound();
             }
-            return View(game);
+
+            _context.Games.Remove(game);
+            await _context.SaveChangesAsync();
+            return RedirectToAction(nameof(Index));
         }
     }
 }

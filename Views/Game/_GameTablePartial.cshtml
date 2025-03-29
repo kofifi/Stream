@@ -1,0 +1,16 @@
+@model List<Stream.Models.Game>
+
+<tbody>
+@foreach (var game in Model)
+{
+    <tr>
+        <td>@game.Title</td>
+        <td>@game.Genre</td>
+        <td>@game.ReleaseDate?.ToString("yyyy-MM-dd HH:mm")</td>
+        <td>
+            <a class="btn btn-primary" href="@Url.Action("Edit", "Game", new { id = game.Id })">Edit</a>
+            <a class="btn btn-danger" href="@Url.Action("Delete", "Game", new { id = game.Id })">Delete</a>
+        </td>
+    </tr>
+}
+</tbody>

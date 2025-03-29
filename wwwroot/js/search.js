@@ -3,6 +3,7 @@
 document.addEventListener('DOMContentLoaded', function () {
     const searchQueryInput = document.getElementById('searchQuery');
     const usersTable = document.getElementById('usersTable');
+    const gamesTable = document.getElementById('gamesTable');
 
     if (searchQueryInput && usersTable) {
         searchQueryInput.addEventListener('input', function () {
@@ -15,4 +16,16 @@ document.addEventListener('DOMContentLoaded', function () {
                 });
         });
     }
+
+    if (searchQueryInput && gamesTable) {
+        searchQueryInput.addEventListener('input', function () {
+            const searchQuery = this.value;
+            fetch(`/Game/Index?searchQuery=${encodeURIComponent(searchQuery)}`)
+                .then(response => response.text())
+                .then(data => {
+                    gamesTable.innerHTML = new DOMParser().parseFromString(data, 'text/html').querySelector('#gamesTable').innerHTML;
+                });
+        });
+    }
 });
+

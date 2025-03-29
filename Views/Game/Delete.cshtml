@@ -1,0 +1,31 @@
+@model Stream.Models.Game
+
+@{
+    ViewData["Title"] = "Usuń grę";
+}
+
+<div class="container mt-4">
+    <h2 class="mb-4">Usuń grę</h2>
+
+    <h4>Czy na pewno chcesz usunąć tę grę?</h4>
+
+    <div class="card mb-4">
+        <div class="card-header">
+            Informacje o grze
+        </div>
+        <div class="card-body">
+            <p><strong>Tytuł:</strong> @Model.Title</p>
+            <p><strong>Data wydania:</strong> @Model.ReleaseDate?.ToString("yyyy-MM-dd")</p>
+            <p><strong>Platforma:</strong> @Model.Platform</p>
+            <p><strong>Gatunek:</strong> @Model.Genre</p>
+        </div>
+    </div>
+
+    <div class="d-flex justify-content-between">
+        <form asp-action="Delete" method="post">
+            <input type="hidden" asp-for="Id" />
+            <button type="submit" class="btn btn-danger btn-lg">Usuń</button>
+        </form>
+        <a href="@Url.Action("Index")" class="btn btn-secondary btn-lg">Anuluj</a>
+    </div>
+</div>
