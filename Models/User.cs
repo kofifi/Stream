@@ -10,17 +10,21 @@ namespace Stream.Models
 
         [Required]
         [StringLength(50)]
+        [Display(Name = "Nazwa użytkownika")]
         public string? Username { get; set; }
 
         [Required]
         [StringLength(100)]
         [EmailAddress]
+        [Display(Name = "Adres e-mail")]
         public string? Email { get; set; }
 
         [Required]
         [StringLength(255)]
+        [Display(Name = "Hasło")]
         public string? Password { get; set; }
 
+        [Display(Name = "Data utworzenia")]
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
         public ICollection<Library> Libraries { get; set; } = new List<Library>();

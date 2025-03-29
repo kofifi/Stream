@@ -1,0 +1,14 @@
+﻿@{
+    ViewData["Title"] = "Search Users";
+}
+
+<div class="container mt-4">
+    <h2>Search Users</h2>
+
+    <form method="post" asp-action="Search">
+        <div class="input-group mb-3">
+            <input type="text" name="searchQuery" class="form-control" placeholder="Search by Username or Email" />
+            <button type="submit" class="btn btn-primary">Search</button>
+        </div>
+    </form>
+</div>
