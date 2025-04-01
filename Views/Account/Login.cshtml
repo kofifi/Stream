@@ -1,18 +1,26 @@
-﻿@model TModel
+﻿@model Stream.Models.Login
 
 @{
-    Layout = null;
+    ViewData["Title"] = "Logowanie";
 }
 
-<!DOCTYPE html>
+<div class="container mt-4">
+    <h2 class="mb-3">Logowanie</h2>
 
-<html>
-<head>
-    <title>title</title>
-</head>
-<body>
-<div>
-      
+    <form asp-action="Login" method="post">
+        <div asp-validation-summary="All" class="text-danger"></div>
+        <div class="form-group">
+            <label asp-for="Email" class="control-label"></label>
+            <input asp-for="Email" class="form-control" />
+            <span asp-validation-for="Email" class="text-danger"></span>
+        </div>
+        <div class="form-group">
+            <label asp-for="Password" class="control-label"></label>
+            <input asp-for="Password" type="password" class="form-control" />
+            <span asp-validation-for="Password" class="text-danger"></span>
+        </div>
+        <div class="form-group mt-3">
+            <input type="submit" value="Zaloguj" class="btn btn-primary" />
+        </div>
+    </form>
 </div>
-</body>
-</html>
