@@ -1,0 +1,16 @@
+﻿@model List<Stream.Models.User>
+
+<tbody>
+@foreach (var user in Model)
+{
+    <tr>
+        <td>@user.Username</td>
+        <td>@user.Email</td>
+        <td>@user.CreatedAt.ToString("yyyy-MM-dd HH:mm")</td>
+        <td>
+            <a class="btn btn-primary" href="@Url.Action("Edit", "User", new { id = user.Id })">Edit</a>
+            <a class="btn btn-danger" href="@Url.Action("Delete", "User", new { id = user.Id })">Delete</a>
+        </td>
+    </tr>
+}
+</tbody>
