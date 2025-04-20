@@ -1,17 +1,15 @@
-﻿// wwwroot/js/search.js
-
-document.addEventListener('DOMContentLoaded', function () {
+﻿document.addEventListener('DOMContentLoaded', function () {
     const searchQueryInput = document.getElementById('searchQuery');
     const usersTable = document.getElementById('usersTable');
     const gamesTable = document.getElementById('gamesTable');
+    const librariesTable = document.getElementById('librariesTable'); // Dodano obsługę tabeli Library
 
     if (searchQueryInput && usersTable) {
         searchQueryInput.addEventListener('input', function () {
-            const searchQuery = this.value;  // Use 'const' because searchQuery won't be reassigned
+            const searchQuery = this.value;
             fetch(`/User/Index?searchQuery=${encodeURIComponent(searchQuery)}`)
                 .then(response => response.text())
                 .then(data => {
-                    // Update the table with the new filtered results
                     usersTable.innerHTML = new DOMParser().parseFromString(data, 'text/html').querySelector('#usersTable').innerHTML;
                 });
         });
@@ -27,5 +25,33 @@ document.addEventListener('DOMContentLoaded', function () {
                 });
         });
     }
-});
 
+    if (searchQueryInput && librariesTable) {
+        searchQueryInput.addEventListener('input', function () {
+            const searchQuery = this.value;
+            fetch(`/Library/Index?searchQuery=${encodeURIComponent(searchQuery)}`)
+                .then(response => response.text())
+                .then(data => {
+                    gamesTable.innerHTML = new DOMParser().parseFromString(data, 'text/html').querySelector('#gamesTable').innerHTML;
+                });
+        });
+    }
+    
+    if (searchQueryInput && librariesTable) {
+        searchQueryInput.addEventListener('input', function () {
+            const searchQuery = this.value;
+            fetch(`/Library/Index?searchQuery=${encodeURIComponent(searchQuery)}`, {
+                headers: { 'X-Requested-With': 'XMLHttpRequest' }
+            })
+                .then(response => response.text())
+                .then(data => {
+                    const parser = new DOMParser();
+                    const newTableBody = parser.parseFromString(data, 'text/html').querySelector('#librariesTable tbody');
+                    if (newTableBody) {
+                        librariesTable.querySelector('tbody').innerHTML = newTableBody.innerHTML;
+                    }
+                })
+                .catch(error => console.error('Error fetching search results:', error));
+        });
+    }
+});

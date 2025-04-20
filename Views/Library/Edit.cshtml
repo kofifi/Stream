@@ -1,18 +1,34 @@
-﻿@model TModel
+﻿@model Stream.Models.Library
 
 @{
-    Layout = null;
+    ViewData["Title"] = "Edytuj bibliotekę";
 }
 
-<!DOCTYPE html>
+<div class="container mt-4">
+    <h2 class="mb-3">Edytuj bibliotekę</h2>
 
-<html>
-<head>
-    <title>title</title>
-</head>
-<body>
-<div>
-      
+    <form asp-action="Edit" method="post">
+        <input type="hidden" asp-for="Id" />
+
+        <div class="form-group">
+            <label class="control-label">Użytkownik</label>
+            <input class="form-control" value="@Model.User?.Username" readonly />
+        </div>
+
+        <div class="form-group">
+            <label class="control-label">Gra</label>
+            <input class="form-control" value="@Model.Game?.Title" readonly />
+        </div>
+
+        <div class="form-group">
+            <label asp-for="Status" class="control-label">Status</label>
+            <select asp-for="Status" class="form-control" asp-items="Html.GetEnumSelectList<Stream.Models.Status>()"></select>
+            <span asp-validation-for="Status" class="text-danger"></span>
+        </div>
+
+        <div class="form-group mt-3">
+            <input type="submit" value="Zapisz" class="btn btn-primary" />
+            <a asp-action="Index" class="btn btn-secondary">Powrót</a>
+        </div>
+    </form>
 </div>
-</body>
-</html>

@@ -1,5 +1,16 @@
-﻿@{
+﻿@using System.ComponentModel.DataAnnotations
+@model IEnumerable<Stream.Models.Library>
+
+@{
     ViewData["Title"] = "Lista bibliotek";
+    var displayNames = typeof(Stream.Models.Library)
+        .GetProperties()
+        .Where(p => p.Name == "Id" || p.Name == "User" || p.Name == "Game" || p.Name == "Status")
+        .ToDictionary(p => p.Name, p => p.GetCustomAttributes(typeof(DisplayAttribute), false)
+            .Cast<DisplayAttribute>()
+            .FirstOrDefault()?.Name ?? p.Name);
+
+    var searchQuery = ViewData["SearchQuery"] as string ?? string.Empty;
 }
 
 <div class="container mt-4">
@@ -12,13 +23,20 @@
         </a>
     </div>
 
-    <table class="table table-striped">
+    <!-- Search Form -->
+    <div class="input-group mb-3">
+        <input type="text" id="searchQuery" class="form-control" placeholder="Szukaj bibliotek..." value="@searchQuery"/>
+    </div>
+
+    <!-- Libraries Table -->
+    <table class="table table-striped" id="librariesTable">
         <thead class="table-light">
         <tr>
-            <th>Id</th>
-            <th>Użytkownik</th>
-            <th>Gra</th>
-            <th>Status</th>
+            <th>@displayNames["Id"]</th>
+            <th>@displayNames["User"]</th>
+            <th>@displayNames["Game"]</th>
+            <th>@displayNames["Status"]</th>
+            <th>Akcje</th>
         </tr>
         </thead>
         <tbody>
@@ -29,6 +47,10 @@
                 <td>@library.User?.Username</td>
                 <td>@library.Game?.Title</td>
                 <td>@library.Status</td>
+                <td>
+                    <a class="btn btn-primary" asp-action="Edit" asp-route-id="@library.Id">Edytuj</a>
+                    <a class="btn btn-danger" asp-action="Delete" asp-route-id="@library.Id">Usuń</a>
+                </td>
             </tr>
         }
         </tbody>

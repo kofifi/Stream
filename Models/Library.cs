@@ -17,7 +17,6 @@ namespace Stream.Models
         public Game? Game { get; set; }
 
         [Required]
-        [StringLength(100)]
-        public string? Status { get; set; }
+        public Status Status { get; set; }
     }
 }

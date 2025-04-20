@@ -21,8 +21,8 @@ public static class ModelBuilderExtensions
 
         // Seed Libraries (set only foreign keys)
         modelBuilder.Entity<Library>().HasData(
-            new Library { Id = 1, UserId = 1, GameId = 1, Status = "Playing" },
-            new Library { Id = 2, UserId = 1, GameId = 2, Status = "Wishlist" }
+            new Library { Id = 1, UserId = 1, GameId = 1, Status = Status.Active },
+            new Library { Id = 2, UserId = 1, GameId = 2, Status = Status.Active  }
         );
     }
 }

@@ -1,18 +1,30 @@
-﻿@model TModel
+﻿@model Stream.Models.Library
 
 @{
-    Layout = null;
+    ViewData["Title"] = "Usuń grę z biblioteki";
 }
 
-<!DOCTYPE html>
+<div class="container mt-4">
+    <h2 class="mb-4">Usuń grę z biblioteki</h2>
 
-<html>
-<head>
-    <title>title</title>
-</head>
-<body>
-<div>
-      
+    <h4>Czy na pewno chcesz usunąć tę grę z biblioteki?</h4>
+
+    <div class="card mb-4">
+        <div class="card-header">
+            Informacje o bibliotece
+        </div>
+        <div class="card-body">
+            <p><strong>Tytuł gry:</strong> @Model.Game?.Title</p>
+            <p><strong>Użytkownik:</strong> @Model.User?.Username</p>
+            <p><strong>Status:</strong> @Model.Status</p>
+        </div>
+    </div>
+
+    <div class="d-flex justify-content-between">
+        <form asp-action="DeleteConfirmed" method="post">
+            <input type="hidden" asp-for="Id" />
+            <button type="submit" class="btn btn-danger btn-lg">Usuń</button>
+        </form>
+        <a href="@Url.Action("Index")" class="btn btn-secondary btn-lg">Anuluj</a>
+    </div>
 </div>
-</body>
-</html>

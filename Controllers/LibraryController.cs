@@ -17,10 +17,55 @@ namespace Stream.Controllers
             _context = context;
         }
 
-        public async Task<IActionResult> Index()
+        [HttpPost]
+        public async Task<IActionResult> Search(string searchQuery)
         {
-            var libraries = await _context.Libraries.Include(l => l.User).Include(l => l.Game).ToListAsync();
-            return View(libraries);
+            if (string.IsNullOrEmpty(searchQuery))
+            {
+                return RedirectToAction(nameof(Index));
+            }
+
+            var libraries = await _context.Libraries
+                .Include(l => l.User)
+                .Include(l => l.Game)
+                .Where(l => 
+                    (l.User != null && l.User.Username.Contains(searchQuery)) || 
+                    (l.Game != null && l.Game.Title.Contains(searchQuery)) || 
+                    l.Status.ToString().Contains(searchQuery))
+                .ToListAsync();
+
+            return RedirectToAction(nameof(Index), new { searchQuery = searchQuery });
+        }
+
+        public async Task<IActionResult> Index(string searchQuery)
+        {
+            var libraries = _context.Libraries
+                .Include(l => l.User)
+                .Include(l => l.Game)
+                .AsQueryable();
+
+            if (!string.IsNullOrEmpty(searchQuery))
+            {
+                var lowerSearchQuery = searchQuery.ToLower();
+                libraries = libraries.Where(l => 
+                    (l.User != null && l.User.Username != null && l.User.Username.ToLower().Contains(lowerSearchQuery)) || 
+                    (l.Game != null && l.Game.Title != null && l.Game.Title.ToLower().Contains(lowerSearchQuery)) || 
+                    l.Status.ToString().ToLower().Contains(lowerSearchQuery));
+            }
+
+            ViewData["SearchQuery"] = searchQuery;
+
+            if (IsAjaxRequest())
+            {
+                return PartialView("_LibraryTablePartial", await libraries.ToListAsync());
+            }
+
+            return View(await libraries.ToListAsync());
+        }
+
+        public bool IsAjaxRequest()
+        {
+            return Request.Headers["X-Requested-With"] == "XMLHttpRequest";
         }
 
         public IActionResult Create()
@@ -47,11 +92,17 @@ namespace Stream.Controllers
 
         public async Task<IActionResult> Edit(int id)
         {
-            var library = await _context.Libraries.FindAsync(id);
+            var library = await _context.Libraries
+                .Include(l => l.User)
+                .Include(l => l.Game)
+                .FirstOrDefaultAsync(l => l.Id == id);
+
             if (library == null)
             {
                 return NotFound();
             }
+
+            ViewBag.Status = new SelectList(Enum.GetValues(typeof(Status)).Cast<Status>());
             return View(library);
         }
 
@@ -66,12 +117,21 @@ namespace Stream.Controllers
 
             if (!ModelState.IsValid)
             {
+                ViewBag.Status = new SelectList(Enum.GetValues(typeof(Status)).Cast<Status>());
                 return View(library);
             }
 
             try
             {
-                _context.Update(library);
+                var existingLibrary = await _context.Libraries.FindAsync(id);
+                if (existingLibrary == null)
+                {
+                    return NotFound();
+                }
+
+                // Aktualizuj tylko pole Status
+                existingLibrary.Status = library.Status;
+
                 await _context.SaveChangesAsync();
             }
             catch (DbUpdateConcurrencyException)
@@ -88,15 +148,20 @@ namespace Stream.Controllers
 
         public async Task<IActionResult> Delete(int id)
         {
-            var library = await _context.Libraries.FindAsync(id);
+            var library = await _context.Libraries
+                .Include(l => l.User)
+                .Include(l => l.Game)
+                .FirstOrDefaultAsync(l => l.Id == id);
+
             if (library == null)
             {
                 return NotFound();
             }
-            return View(library);
+
+            return View(library); // Wyświetla widok Delete.cshtml
         }
 
-        [HttpPost, ActionName("Delete")]
+        [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {

@@ -1,15 +1,16 @@
-﻿@model List<Stream.Models.User>
+﻿@model IEnumerable<Stream.Models.Library>
 
 <tbody>
-@foreach (var user in Model)
+@foreach (var library in Model)
 {
     <tr>
-        <td>@user.Username</td>
-        <td>@user.Email</td>
-        <td>@user.CreatedAt.ToString("yyyy-MM-dd HH:mm")</td>
+        <td>@library.Id</td>
+        <td>@library.User?.Username</td>
+        <td>@library.Game?.Title</td>
+        <td>@library.Status</td>
         <td>
-            <a class="btn btn-primary" href="@Url.Action("Edit", "User", new { id = user.Id })">Edit</a>
-            <a class="btn btn-danger" href="@Url.Action("Delete", "User", new { id = user.Id })">Delete</a>
+            <a class="btn btn-primary" asp-action="Edit" asp-route-id="@library.Id">Edytuj</a>
+            <a class="btn btn-danger" asp-action="Delete" asp-route-id="@library.Id">Usuń</a>
         </td>
     </tr>
 }
