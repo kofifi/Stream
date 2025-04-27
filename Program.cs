@@ -3,6 +3,8 @@ using Stream.Data;
 using Stream.Repository.Game;
 using Stream.Repository.User;
 using Stream.Repository.Library;
+using Stream.Services;
+using Stream.Services.Interfaces;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -18,6 +20,11 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IGameRepository, GameRepository>();
 builder.Services.AddScoped<ILibraryRepository, LibraryRepository>();
+
+// Services
+builder.Services.AddScoped<IGameService, GameService>();
+builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<ILibraryService, LibraryService>();
 
 var app = builder.Build();
 

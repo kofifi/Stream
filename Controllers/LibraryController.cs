@@ -1,25 +1,18 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Stream.Models;
-using Stream.Repository.Library;
-using Stream.Repository.User;
-using Stream.Repository.Game;
-using System.Linq;
+using Stream.Services.Interfaces;
 using System.Threading.Tasks;
 
 namespace Stream.Controllers
 {
     public class LibraryController : Controller
     {
-        private readonly ILibraryRepository _libraryRepository;
-        private readonly IUserRepository _userRepository;
-        private readonly IGameRepository _gameRepository;
+        private readonly ILibraryService _libraryService;
 
-        public LibraryController(ILibraryRepository libraryRepository, IUserRepository userRepository, IGameRepository gameRepository)
+        public LibraryController(ILibraryService libraryService)
         {
-            _libraryRepository = libraryRepository;
-            _userRepository = userRepository;
-            _gameRepository = gameRepository;
+            _libraryService = libraryService;
         }
 
         [HttpPost]
@@ -35,7 +28,7 @@ namespace Stream.Controllers
 
         public async Task<IActionResult> Index(string searchQuery)
         {
-            var libraries = await _libraryRepository.GetAllAsync(searchQuery);
+            var libraries = await _libraryService.GetAllAsync(searchQuery);
             ViewData["SearchQuery"] = searchQuery;
 
             return View(libraries);
@@ -43,8 +36,8 @@ namespace Stream.Controllers
 
         public async Task<IActionResult> Create()
         {
-            ViewData["Users"] = new SelectList(await _userRepository.GetAllAsync(), "Id", "Username");
-            ViewData["Games"] = new SelectList(await _gameRepository.GetAllAsync(), "Id", "Title");
+            ViewData["Users"] = await _libraryService.GetUsersSelectListAsync();
+            ViewData["Games"] = await _libraryService.GetGamesSelectListAsync();
             return View();
         }
 
@@ -54,18 +47,18 @@ namespace Stream.Controllers
         {
             if (ModelState.IsValid)
             {
-                await _libraryRepository.AddAsync(library);
+                await _libraryService.AddAsync(library);
                 return RedirectToAction(nameof(Index));
             }
 
-            ViewData["Users"] = new SelectList(await _userRepository.GetAllAsync(), "Id", "Username", library.UserId);
-            ViewData["Games"] = new SelectList(await _gameRepository.GetAllAsync(), "Id", "Title", library.GameId);
+            ViewData["Users"] = await _libraryService.GetUsersSelectListAsync(library.UserId);
+            ViewData["Games"] = await _libraryService.GetGamesSelectListAsync(library.GameId);
             return View(library);
         }
 
         public async Task<IActionResult> Edit(int id)
         {
-            var library = await _libraryRepository.GetByIdAsync(id);
+            var library = await _libraryService.GetByIdAsync(id);
             if (library == null)
             {
                 return NotFound();
@@ -90,13 +83,13 @@ namespace Stream.Controllers
                 return View(library);
             }
 
-            await _libraryRepository.UpdateAsync(library);
+            await _libraryService.UpdateAsync(library);
             return RedirectToAction(nameof(Index));
         }
 
         public async Task<IActionResult> Delete(int id)
         {
-            var library = await _libraryRepository.GetByIdAsync(id);
+            var library = await _libraryService.GetByIdAsync(id);
             if (library == null)
             {
                 return NotFound();
@@ -109,7 +102,7 @@ namespace Stream.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            await _libraryRepository.DeleteAsync(id);
+            await _libraryService.DeleteAsync(id);
             return RedirectToAction(nameof(Index));
         }
     }

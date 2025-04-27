@@ -53,8 +53,13 @@ namespace Stream.Repository.Library
 
         public async Task UpdateAsync(LibraryModel library)
         {
-            _context.Libraries.Update(library);
-            await _context.SaveChangesAsync();
+            var existingLibrary = await _context.Libraries.FindAsync(library.Id);
+            if (existingLibrary != null)
+            {
+                existingLibrary.Status = library.Status;
+                _context.Libraries.Update(existingLibrary);
+                await _context.SaveChangesAsync();
+            }
         }
 
         public async Task DeleteAsync(int id)

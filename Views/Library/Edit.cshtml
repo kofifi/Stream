@@ -23,7 +23,7 @@
 
         <div class="form-group">
             <label asp-for="Status" class="control-label">Status</label>
-            <select asp-for="Status" class="form-control" asp-items="Html.GetEnumSelectList<Stream.Models.Status>()"></select>
+            <select asp-for="Status" class="form-control" asp-items="ViewBag.Status"></select>
             <span asp-validation-for="Status" class="text-danger"></span>
         </div>
 

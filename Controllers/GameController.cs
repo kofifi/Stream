@@ -1,17 +1,17 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Stream.Models;
-using Stream.Repository.Game;
+using Stream.Services.Interfaces;
 using System.Threading.Tasks;
 
 namespace Stream.Controllers
 {
     public class GameController : Controller
     {
-        private readonly IGameRepository _repository;
+        private readonly IGameService _gameService;
 
-        public GameController(IGameRepository repository)
+        public GameController(IGameService gameService)
         {
-            _repository = repository;
+            _gameService = gameService;
         }
 
         public IActionResult Search()
@@ -32,7 +32,7 @@ namespace Stream.Controllers
 
         public async Task<IActionResult> Index(string searchQuery)
         {
-            var games = await _repository.GetAllAsync(searchQuery);
+            var games = await _gameService.GetAllAsync(searchQuery);
             ViewData["SearchQuery"] = searchQuery;
 
             if (IsAjaxRequest())
@@ -67,13 +67,13 @@ namespace Stream.Controllers
                 return View(game);
             }
 
-            await _repository.AddAsync(game);
+            await _gameService.AddAsync(game);
             return RedirectToAction(nameof(Index));
         }
 
         public async Task<IActionResult> Edit(int id)
         {
-            var game = await _repository.GetByIdAsync(id);
+            var game = await _gameService.GetByIdAsync(id);
             if (game == null)
             {
                 return NotFound();
@@ -95,13 +95,13 @@ namespace Stream.Controllers
                 return View(game);
             }
 
-            await _repository.UpdateAsync(game);
+            await _gameService.UpdateAsync(game);
             return RedirectToAction(nameof(Index));
         }
 
         public async Task<IActionResult> Delete(int id)
         {
-            var game = await _repository.GetByIdAsync(id);
+            var game = await _gameService.GetByIdAsync(id);
             if (game == null)
             {
                 return NotFound();
@@ -113,7 +113,7 @@ namespace Stream.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            await _repository.DeleteAsync(id);
+            await _gameService.DeleteAsync(id);
             return RedirectToAction(nameof(Index));
         }
     }

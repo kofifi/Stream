@@ -1,22 +1,22 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Stream.Models;
-using Stream.Repository.User;
+using Stream.Services.Interfaces;
 using System.Threading.Tasks;
 
 namespace Stream.Controllers;
 
 public class UserController : Controller
 {
-    private readonly IUserRepository _repository;
+    private readonly IUserService _userService;
 
-    public UserController(IUserRepository repository)
+    public UserController(IUserService userService)
     {
-        _repository = repository;
+        _userService = userService;
     }
 
     public async Task<IActionResult> Index(string searchQuery)
     {
-        var users = await _repository.GetAllAsync(searchQuery);
+        var users = await _userService.GetAllAsync(searchQuery);
         ViewData["SearchQuery"] = searchQuery;
 
         if (IsAjaxRequest())
@@ -51,14 +51,13 @@ public class UserController : Controller
             return View(user);
         }
 
-        user.CreatedAt = DateTime.UtcNow;
-        await _repository.AddAsync(user);
+        await _userService.AddAsync(user);
         return RedirectToAction(nameof(Index));
     }
 
     public async Task<IActionResult> Delete(int id)
     {
-        var user = await _repository.GetByIdAsync(id);
+        var user = await _userService.GetByIdAsync(id);
         if (user == null)
         {
             return NotFound();
@@ -71,13 +70,13 @@ public class UserController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> DeleteConfirmed(int id)
     {
-        await _repository.DeleteAsync(id);
+        await _userService.DeleteAsync(id);
         return RedirectToAction(nameof(Index));
     }
 
     public async Task<IActionResult> Edit(int id)
     {
-        var user = await _repository.GetByIdAsync(id);
+        var user = await _userService.GetByIdAsync(id);
         if (user == null)
         {
             return NotFound();
@@ -100,7 +99,7 @@ public class UserController : Controller
             return View(user);
         }
 
-        await _repository.UpdateAsync(user);
+        await _userService.UpdateAsync(user);
         return RedirectToAction(nameof(Index));
     }
 
