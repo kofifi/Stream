@@ -1,19 +1,17 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Stream.Models;
-using Stream.Data;
-using Microsoft.EntityFrameworkCore;
+using Stream.Repository.Game;
 using System.Threading.Tasks;
-using System.Linq;
 
 namespace Stream.Controllers
 {
     public class GameController : Controller
     {
-        private readonly ApplicationDbContext _context;
+        private readonly IGameRepository _repository;
 
-        public GameController(ApplicationDbContext context)
+        public GameController(IGameRepository repository)
         {
-            _context = context;
+            _repository = repository;
         }
 
         public IActionResult Search()
@@ -29,33 +27,20 @@ namespace Stream.Controllers
                 return RedirectToAction(nameof(Index));
             }
 
-            var games = await _context.Games
-                .Where(g => g.Title.Contains(searchQuery) || g.Genre.ToString().Contains(searchQuery))
-                .ToListAsync();
-            return RedirectToAction(nameof(Index), new { searchQuery = searchQuery });
+            return RedirectToAction(nameof(Index), new { searchQuery });
         }
 
         public async Task<IActionResult> Index(string searchQuery)
         {
-            var games = _context.Games.AsQueryable();
-
-            if (!string.IsNullOrEmpty(searchQuery))
-            {
-                var lowerSearchQuery = searchQuery.ToLower();
-                games = games.Where(g => 
-                    (g.Title != null && g.Title.ToLower().Contains(lowerSearchQuery)) || 
-                    g.Genre.ToString().ToLower().Contains(lowerSearchQuery)
-                );
-            }
-
+            var games = await _repository.GetAllAsync(searchQuery);
             ViewData["SearchQuery"] = searchQuery;
 
             if (IsAjaxRequest())
             {
-                return PartialView("_GameTablePartial", await games.ToListAsync());
+                return PartialView("_GameTablePartial", games);
             }
 
-            return View(await games.ToListAsync());
+            return View(games);
         }
 
         public bool IsAjaxRequest()
@@ -82,14 +67,13 @@ namespace Stream.Controllers
                 return View(game);
             }
 
-            _context.Games.Add(game);
-            await _context.SaveChangesAsync();
+            await _repository.AddAsync(game);
             return RedirectToAction(nameof(Index));
         }
 
         public async Task<IActionResult> Edit(int id)
         {
-            var game = await _context.Games.FindAsync(id);
+            var game = await _repository.GetByIdAsync(id);
             if (game == null)
             {
                 return NotFound();
@@ -111,26 +95,13 @@ namespace Stream.Controllers
                 return View(game);
             }
 
-            try
-            {
-                _context.Update(game);
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!_context.Games.Any(g => g.Id == game.Id))
-                {
-                    return NotFound();
-                }
-                throw;
-            }
-
+            await _repository.UpdateAsync(game);
             return RedirectToAction(nameof(Index));
         }
 
         public async Task<IActionResult> Delete(int id)
         {
-            var game = await _context.Games.FindAsync(id);
+            var game = await _repository.GetByIdAsync(id);
             if (game == null)
             {
                 return NotFound();
@@ -142,14 +113,7 @@ namespace Stream.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var game = await _context.Games.FindAsync(id);
-            if (game == null)
-            {
-                return NotFound();
-            }
-
-            _context.Games.Remove(game);
-            await _context.SaveChangesAsync();
+            await _repository.DeleteAsync(id);
             return RedirectToAction(nameof(Index));
         }
     }

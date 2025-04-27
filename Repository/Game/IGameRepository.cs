@@ -1,4 +1,4 @@
-﻿namespace Stream.Repository.GameRepository
+﻿namespace Stream.Repository.Game
 {
     public interface IGameRepository
     {

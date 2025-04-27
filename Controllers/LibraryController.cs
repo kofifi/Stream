@@ -1,20 +1,25 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Stream.Models;
-using Stream.Data;
-using Microsoft.EntityFrameworkCore;
-using System.Threading.Tasks;
-using System.Linq;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Stream.Models;
+using Stream.Repository.Library;
+using Stream.Repository.User;
+using Stream.Repository.Game;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace Stream.Controllers
 {
     public class LibraryController : Controller
     {
-        private readonly ApplicationDbContext _context;
+        private readonly ILibraryRepository _libraryRepository;
+        private readonly IUserRepository _userRepository;
+        private readonly IGameRepository _gameRepository;
 
-        public LibraryController(ApplicationDbContext context)
+        public LibraryController(ILibraryRepository libraryRepository, IUserRepository userRepository, IGameRepository gameRepository)
         {
-            _context = context;
+            _libraryRepository = libraryRepository;
+            _userRepository = userRepository;
+            _gameRepository = gameRepository;
         }
 
         [HttpPost]
@@ -25,53 +30,21 @@ namespace Stream.Controllers
                 return RedirectToAction(nameof(Index));
             }
 
-            var libraries = await _context.Libraries
-                .Include(l => l.User)
-                .Include(l => l.Game)
-                .Where(l => 
-                    (l.User != null && l.User.Username.Contains(searchQuery)) || 
-                    (l.Game != null && l.Game.Title.Contains(searchQuery)) || 
-                    l.Status.ToString().Contains(searchQuery))
-                .ToListAsync();
-
-            return RedirectToAction(nameof(Index), new { searchQuery = searchQuery });
+            return RedirectToAction(nameof(Index), new { searchQuery });
         }
 
         public async Task<IActionResult> Index(string searchQuery)
         {
-            var libraries = _context.Libraries
-                .Include(l => l.User)
-                .Include(l => l.Game)
-                .AsQueryable();
-
-            if (!string.IsNullOrEmpty(searchQuery))
-            {
-                var lowerSearchQuery = searchQuery.ToLower();
-                libraries = libraries.Where(l => 
-                    (l.User != null && l.User.Username != null && l.User.Username.ToLower().Contains(lowerSearchQuery)) || 
-                    (l.Game != null && l.Game.Title != null && l.Game.Title.ToLower().Contains(lowerSearchQuery)) || 
-                    l.Status.ToString().ToLower().Contains(lowerSearchQuery));
-            }
-
+            var libraries = await _libraryRepository.GetAllAsync(searchQuery);
             ViewData["SearchQuery"] = searchQuery;
 
-            if (IsAjaxRequest())
-            {
-                return PartialView("_LibraryTablePartial", await libraries.ToListAsync());
-            }
-
-            return View(await libraries.ToListAsync());
+            return View(libraries);
         }
 
-        public bool IsAjaxRequest()
+        public async Task<IActionResult> Create()
         {
-            return Request.Headers["X-Requested-With"] == "XMLHttpRequest";
-        }
-
-        public IActionResult Create()
-        {
-            ViewData["Users"] = new SelectList(_context.Users, "Id", "Username");
-            ViewData["Games"] = new SelectList(_context.Games, "Id", "Title");
+            ViewData["Users"] = new SelectList(await _userRepository.GetAllAsync(), "Id", "Username");
+            ViewData["Games"] = new SelectList(await _gameRepository.GetAllAsync(), "Id", "Title");
             return View();
         }
 
@@ -81,22 +54,18 @@ namespace Stream.Controllers
         {
             if (ModelState.IsValid)
             {
-                _context.Add(library);
-                await _context.SaveChangesAsync();
+                await _libraryRepository.AddAsync(library);
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["Users"] = new SelectList(_context.Users, "Id", "Username", library.UserId);
-            ViewData["Games"] = new SelectList(_context.Games, "Id", "Title", library.GameId);
+
+            ViewData["Users"] = new SelectList(await _userRepository.GetAllAsync(), "Id", "Username", library.UserId);
+            ViewData["Games"] = new SelectList(await _gameRepository.GetAllAsync(), "Id", "Title", library.GameId);
             return View(library);
         }
 
         public async Task<IActionResult> Edit(int id)
         {
-            var library = await _context.Libraries
-                .Include(l => l.User)
-                .Include(l => l.Game)
-                .FirstOrDefaultAsync(l => l.Id == id);
-
+            var library = await _libraryRepository.GetByIdAsync(id);
             if (library == null)
             {
                 return NotFound();
@@ -121,70 +90,27 @@ namespace Stream.Controllers
                 return View(library);
             }
 
-            try
-            {
-                var existingLibrary = await _context.Libraries.FindAsync(id);
-                if (existingLibrary == null)
-                {
-                    return NotFound();
-                }
-
-                // Aktualizuj tylko pole Status
-                existingLibrary.Status = library.Status;
-
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!_context.Libraries.Any(l => l.Id == library.Id))
-                {
-                    return NotFound();
-                }
-                throw;
-            }
-
+            await _libraryRepository.UpdateAsync(library);
             return RedirectToAction(nameof(Index));
         }
 
         public async Task<IActionResult> Delete(int id)
         {
-            var library = await _context.Libraries
-                .Include(l => l.User)
-                .Include(l => l.Game)
-                .FirstOrDefaultAsync(l => l.Id == id);
-
+            var library = await _libraryRepository.GetByIdAsync(id);
             if (library == null)
             {
                 return NotFound();
             }
 
-            return View(library); // Wyświetla widok Delete.cshtml
+            return View(library);
         }
 
-        [HttpPost]
+        [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var library = await _context.Libraries.FindAsync(id);
-            if (library != null)
-            {
-                _context.Libraries.Remove(library);
-                await _context.SaveChangesAsync();
-            }
+            await _libraryRepository.DeleteAsync(id);
             return RedirectToAction(nameof(Index));
-        }
-
-        public async Task<IActionResult> Details(int id)
-        {
-            var library = await _context.Libraries
-                .Include(l => l.User)
-                .Include(l => l.Game)
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (library == null)
-            {
-                return NotFound();
-            }
-            return View(library);
         }
     }
 }

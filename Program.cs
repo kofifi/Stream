@@ -1,5 +1,8 @@
 using Microsoft.EntityFrameworkCore;
 using Stream.Data;
+using Stream.Repository.Game;
+using Stream.Repository.User;
+using Stream.Repository.Library;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -10,6 +13,11 @@ builder.Services.AddControllersWithViews();
 // Configure SQLite as the database
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+// Builders for repositories
+builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<IGameRepository, GameRepository>();
+builder.Services.AddScoped<ILibraryRepository, LibraryRepository>();
 
 var app = builder.Build();
 

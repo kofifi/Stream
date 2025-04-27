@@ -1,10 +1,7 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Stream.Data;
 
-namespace Stream.Repositories.Game
+namespace Stream.Repository.Game
 {
     public class GameRepository : IGameRepository
     {
