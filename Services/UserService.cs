@@ -1,25 +1,16 @@
 ﻿using Stream.Models;
 using Stream.Repository.User;
 using Stream.Services.Interfaces;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 
 namespace Stream.Services
 {
     public class UserService : IUserService
     {
         private readonly IUserRepository _repository;
-
         public UserService(IUserRepository repository)
         {
             _repository = repository;
         }
-
-        public async Task<List<User>> GetAllAsync(string searchQuery = null)
-        {
-            return await _repository.GetAllAsync(searchQuery);
-        }
-
         public async Task<User> GetByIdAsync(int id)
         {
             return await _repository.GetByIdAsync(id);
@@ -39,6 +30,16 @@ namespace Stream.Services
         public async Task DeleteAsync(int id)
         {
             await _repository.DeleteAsync(id);
+        }
+        
+        public async Task<List<User>> SearchUserAsync(string searchQuery, int pageNumber = 1, int pageSize = 10)
+        {
+            return await _repository.GetAllAsync(searchQuery, pageNumber, pageSize);
+        }
+
+        public Task<int?> GetTotalCountAsync(string searchQuery)
+        {
+            return _repository.GetTotalCountAsync(searchQuery);
         }
     }
 }

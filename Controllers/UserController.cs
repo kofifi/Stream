@@ -14,29 +14,54 @@ public class UserController : Controller
         _userService = userService;
     }
 
-    public async Task<IActionResult> Index(string searchQuery)
+    [HttpGet]
+    public IActionResult Search()
     {
-        var users = await _userService.GetAllAsync(searchQuery);
-        ViewData["SearchQuery"] = searchQuery;
+        return View();
+    }
 
-        if (IsAjaxRequest())
+    [HttpPost]
+    public async Task<IActionResult> Search(string searchQuery)
+    {
+        if (string.IsNullOrEmpty(searchQuery))
         {
-            return PartialView("_UserTablePartial", users);
+            return RedirectToAction(nameof(Index));
         }
 
-        return View(users);
+        return RedirectToAction(nameof(Index), new { searchQuery });
     }
+
+ [HttpGet]
+public async Task<IActionResult> Index(string searchQuery, int pageNumber = 1, int pageSize = 10)
+{
+    var users = await _userService.SearchUserAsync(searchQuery, pageNumber, pageSize);
+    var totalUsers = await _userService.GetTotalCountAsync(searchQuery);
+
+    ViewData["SearchQuery"] = searchQuery;
+    ViewData["CurrentPage"] = pageNumber;
+    ViewData["PageSize"] = pageSize;
+    ViewData["TotalUsers"] = totalUsers;
+
+    if (IsAjaxRequest())
+    {
+        return PartialView("_UserTablePartial", users);
+    }
+
+    return View(users);
+}
 
     public bool IsAjaxRequest()
     {
         return Request.Headers["X-Requested-With"] == "XMLHttpRequest";
     }
 
+    [HttpPost]
     public IActionResult ResetSearch()
     {
         return RedirectToAction(nameof(Index), new { searchQuery = string.Empty });
     }
 
+    [HttpGet]
     public IActionResult Create()
     {
         return View();
@@ -55,25 +80,7 @@ public class UserController : Controller
         return RedirectToAction(nameof(Index));
     }
 
-    public async Task<IActionResult> Delete(int id)
-    {
-        var user = await _userService.GetByIdAsync(id);
-        if (user == null)
-        {
-            return NotFound();
-        }
-
-        return View(user);
-    }
-
-    [HttpPost, ActionName("Delete")]
-    [ValidateAntiForgeryToken]
-    public async Task<IActionResult> DeleteConfirmed(int id)
-    {
-        await _userService.DeleteAsync(id);
-        return RedirectToAction(nameof(Index));
-    }
-
+    [HttpGet]
     public async Task<IActionResult> Edit(int id)
     {
         var user = await _userService.GetByIdAsync(id);
@@ -103,19 +110,23 @@ public class UserController : Controller
         return RedirectToAction(nameof(Index));
     }
 
-    public IActionResult Search()
+    [HttpGet]
+    public async Task<IActionResult> Delete(int id)
     {
-        return View();
-    }
-
-    [HttpPost]
-    public async Task<IActionResult> Search(string searchQuery)
-    {
-        if (string.IsNullOrEmpty(searchQuery))
+        var user = await _userService.GetByIdAsync(id);
+        if (user == null)
         {
-            return RedirectToAction(nameof(Index));
+            return NotFound();
         }
 
-        return RedirectToAction(nameof(Index), new { searchQuery });
+        return View(user);
+    }
+
+    [HttpPost, ActionName("Delete")]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> DeleteConfirmed(int id)
+    {
+        await _userService.DeleteAsync(id);
+        return RedirectToAction(nameof(Index));
     }
 }

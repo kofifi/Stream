@@ -7,5 +7,6 @@
         Task AddAsync(Stream.Models.Game game);
         Task UpdateAsync(Stream.Models.Game game);
         Task DeleteAsync(int id);
+        Task<int?> GetTotalCountAsync(string searchQuery);
     }
 }

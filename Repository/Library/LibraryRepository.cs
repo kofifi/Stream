@@ -18,7 +18,7 @@ namespace Stream.Repository.Library
             _context = context;
         }
 
-        public async Task<List<LibraryModel>> GetAllAsync(string searchQuery = null)
+        public async Task<List<LibraryModel>> GetAllAsync(string searchQuery = null, int pageNumber = 1, int pageSize = 10)
         {
             var query = _context.Libraries
                 .Include(l => l.User)
@@ -34,7 +34,26 @@ namespace Stream.Repository.Library
                     l.Status.ToString().ToLower().Contains(lowerSearchQuery));
             }
 
-            return await query.ToListAsync();
+            return await query
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+        }
+
+        public async Task<int?> GetTotalCountAsync(string searchQuery)
+        {
+            var query = _context.Libraries.AsQueryable();
+
+            if (!string.IsNullOrEmpty(searchQuery))
+            {
+                var lowerSearchQuery = searchQuery.ToLower();
+                query = query.Where(l =>
+                    (l.User != null && l.User.Username != null && l.User.Username.ToLower().Contains(lowerSearchQuery)) ||
+                    (l.Game != null && l.Game.Title != null && l.Game.Title.ToLower().Contains(lowerSearchQuery)) ||
+                    l.Status.ToString().ToLower().Contains(lowerSearchQuery));
+            }
+
+            return await query.CountAsync();
         }
 
         public async Task<LibraryModel> GetByIdAsync(int id)

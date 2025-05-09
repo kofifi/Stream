@@ -14,6 +14,7 @@ namespace Stream.Controllers
             _gameService = gameService;
         }
 
+        [HttpGet]
         public IActionResult Search()
         {
             return View();
@@ -30,10 +31,16 @@ namespace Stream.Controllers
             return RedirectToAction(nameof(Index), new { searchQuery });
         }
 
-        public async Task<IActionResult> Index(string searchQuery)
+        [HttpGet]
+        public async Task<IActionResult> Index(string searchQuery, int pageNumber = 1, int pageSize = 10)
         {
-            var games = await _gameService.GetAllAsync(searchQuery);
+            var games = await _gameService.SearchGamesAsync(searchQuery, pageNumber, pageSize);
+            var totalGames = await _gameService.GetTotalCountAsync(searchQuery);
+
             ViewData["SearchQuery"] = searchQuery;
+            ViewData["CurrentPage"] = pageNumber;
+            ViewData["PageSize"] = pageSize;
+            ViewData["TotalGames"] = totalGames;
 
             if (IsAjaxRequest())
             {
@@ -48,11 +55,13 @@ namespace Stream.Controllers
             return Request.Headers["X-Requested-With"] == "XMLHttpRequest";
         }
 
+        [HttpPost]
         public IActionResult ResetSearch()
         {
             return RedirectToAction(nameof(Index), new { searchQuery = string.Empty });
         }
 
+        [HttpGet]
         public IActionResult Create()
         {
             return View();
@@ -71,6 +80,7 @@ namespace Stream.Controllers
             return RedirectToAction(nameof(Index));
         }
 
+        [HttpGet]
         public async Task<IActionResult> Edit(int id)
         {
             var game = await _gameService.GetByIdAsync(id);
@@ -99,6 +109,7 @@ namespace Stream.Controllers
             return RedirectToAction(nameof(Index));
         }
 
+        [HttpGet]
         public async Task<IActionResult> Delete(int id)
         {
             var game = await _gameService.GetByIdAsync(id);

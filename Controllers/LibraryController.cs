@@ -26,10 +26,15 @@ namespace Stream.Controllers
             return RedirectToAction(nameof(Index), new { searchQuery });
         }
 
-        public async Task<IActionResult> Index(string searchQuery)
+        public async Task<IActionResult> Index(string searchQuery, int pageNumber = 1, int pageSize = 10)
         {
-            var libraries = await _libraryService.GetAllAsync(searchQuery);
+            var libraries = await _libraryService.GetAllAsync(searchQuery, pageNumber, pageSize);
+            var totalLibraries = await _libraryService.GetTotalCountAsync(searchQuery);
+
             ViewData["SearchQuery"] = searchQuery;
+            ViewData["CurrentPage"] = pageNumber;
+            ViewData["PageSize"] = pageSize;
+            ViewData["TotalLibraries"] = totalLibraries;
 
             return View(libraries);
         }

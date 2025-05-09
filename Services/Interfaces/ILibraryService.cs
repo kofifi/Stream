@@ -5,7 +5,8 @@ namespace Stream.Services.Interfaces
 {
     public interface ILibraryService
     {
-        Task<List<Library>> GetAllAsync(string searchQuery = null);
+        Task<List<Library>> GetAllAsync(string searchQuery = null, int pageNumber = 1, int pageSize = 10);
+        Task<int?> GetTotalCountAsync(string searchQuery);
         Task<Library> GetByIdAsync(int id);
         Task AddAsync(Library library);
         Task UpdateAsync(Library library);

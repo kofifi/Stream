@@ -1,6 +1,6 @@
 ﻿@using System.ComponentModel.DataAnnotations
 @using Microsoft.AspNetCore.Mvc.TagHelpers
-@model List<Stream.Models.User>
+@model IEnumerable<Stream.Models.User>
 
 @{
     ViewData["Title"] = "Lista użytkowników";
@@ -55,5 +55,21 @@
         }
         </tbody>
     </table>
-</div>
 
+    <!-- Pagination -->
+    <div class="d-flex justify-content-between align-items-center mt-3">
+        <div>
+            <span>Strona @ViewData["CurrentPage"] z @Math.Ceiling((double)(ViewData["TotalUsers"] as int? ?? 0) / (ViewData["PageSize"] as int? ?? 10))</span>
+        </div>
+        <nav>
+            <ul class="pagination">
+                <li class="page-item @(ViewData["CurrentPage"] as int? == 1 ? "disabled" : "")">
+                    <a class="page-link" href="@Url.Action("Index", new { searchQuery = ViewData["SearchQuery"], pageNumber = (ViewData["CurrentPage"] as int?) - 1, pageSize = ViewData["PageSize"] })">Poprzednia</a>
+                </li>
+                <li class="page-item">
+                    <a class="page-link" href="@Url.Action("Index", new { searchQuery = ViewData["SearchQuery"], pageNumber = (ViewData["CurrentPage"] as int?) + 1, pageSize = ViewData["PageSize"] })">Następna</a>
+                </li>
+            </ul>
+        </nav>
+    </div>
+</div>

@@ -1,8 +1,6 @@
 ﻿using Stream.Models;
 using Stream.Repository.Game;
 using Stream.Services.Interfaces;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 
 namespace Stream.Services
 {
@@ -13,11 +11,6 @@ namespace Stream.Services
         public GameService(IGameRepository repository)
         {
             _repository = repository;
-        }
-
-        public async Task<List<Game>> GetAllAsync(string searchQuery = null, int pageNumber = 1, int pageSize = 10)
-        {
-            return await _repository.GetAllAsync(searchQuery, pageNumber, pageSize);
         }
 
         public async Task<Game> GetByIdAsync(int id)
@@ -38,6 +31,16 @@ namespace Stream.Services
         public async Task DeleteAsync(int id)
         {
             await _repository.DeleteAsync(id);
+        }
+
+        public async Task<List<Game>> SearchGamesAsync(string searchQuery, int pageNumber = 1, int pageSize = 10)
+        {
+            return await _repository.GetAllAsync(searchQuery, pageNumber, pageSize);
+        }
+
+        public Task<int?> GetTotalCountAsync(string searchQuery)
+        {
+            return _repository.GetTotalCountAsync(searchQuery);
         }
     }
 }

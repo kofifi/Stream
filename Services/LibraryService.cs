@@ -23,9 +23,14 @@ namespace Stream.Services
             _gameRepository = gameRepository;
         }
 
-        public async Task<List<Library>> GetAllAsync(string searchQuery = null)
+        public async Task<List<Library>> GetAllAsync(string searchQuery = null, int pageNumber = 1, int pageSize = 10)
         {
-            return await _libraryRepository.GetAllAsync(searchQuery);
+            return await _libraryRepository.GetAllAsync(searchQuery, pageNumber, pageSize);
+        }
+
+        public async Task<int?> GetTotalCountAsync(string searchQuery)
+        {
+            return await _libraryRepository.GetTotalCountAsync(searchQuery);
         }
 
         public async Task<Library> GetByIdAsync(int id)

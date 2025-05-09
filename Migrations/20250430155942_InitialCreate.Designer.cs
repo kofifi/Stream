@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Stream.Data;
 
@@ -10,9 +11,11 @@ using Stream.Data;
 namespace Stream.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250430155942_InitialCreate")]
+    partial class InitialCreate
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "9.0.3");
@@ -184,7 +187,7 @@ namespace Stream.Migrations
                             Id = 1,
                             GameId = 1,
                             Status = 0,
-                            UserId = 1
+                            UserId = 6
                         },
                         new
                         {
@@ -198,70 +201,70 @@ namespace Stream.Migrations
                             Id = 3,
                             GameId = 3,
                             Status = 2,
-                            UserId = 3
+                            UserId = 2
                         },
                         new
                         {
                             Id = 4,
                             GameId = 4,
                             Status = 0,
-                            UserId = 4
+                            UserId = 5
                         },
                         new
                         {
                             Id = 5,
                             GameId = 5,
                             Status = 2,
-                            UserId = 5
+                            UserId = 11
                         },
                         new
                         {
                             Id = 6,
                             GameId = 6,
                             Status = 0,
-                            UserId = 6
+                            UserId = 9
                         },
                         new
                         {
                             Id = 7,
                             GameId = 7,
                             Status = 2,
-                            UserId = 7
+                            UserId = 6
                         },
                         new
                         {
                             Id = 8,
                             GameId = 8,
                             Status = 0,
-                            UserId = 8
+                            UserId = 10
                         },
                         new
                         {
                             Id = 9,
                             GameId = 9,
                             Status = 2,
-                            UserId = 9
+                            UserId = 11
                         },
                         new
                         {
                             Id = 10,
                             GameId = 10,
                             Status = 0,
-                            UserId = 10
+                            UserId = 7
                         },
                         new
                         {
                             Id = 11,
                             GameId = 11,
                             Status = 2,
-                            UserId = 11
+                            UserId = 12
                         },
                         new
                         {
                             Id = 12,
                             GameId = 12,
                             Status = 0,
-                            UserId = 12
+                            UserId = 8
                         });
                 });
 
