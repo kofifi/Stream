@@ -25,7 +25,11 @@ namespace Stream.Services
 
         public async Task<List<Library>> GetAllAsync(string searchQuery = null, int pageNumber = 1, int pageSize = 10)
         {
-            return await _libraryRepository.GetAllAsync(searchQuery, pageNumber, pageSize);
+            var libraries = await _libraryRepository.GetAllAsync(searchQuery);
+            return libraries
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
+                .ToList();
         }
 
         public async Task<int?> GetTotalCountAsync(string searchQuery)

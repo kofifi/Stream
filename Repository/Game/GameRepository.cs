@@ -13,7 +13,7 @@ namespace Stream.Repository.Game
             _context = context;
         }
 
-        public async Task<List<Models.Game>> GetAllAsync(string searchQuery = null, int pageNumber = 1, int pageSize = 10)
+        public async Task<List<Models.Game>> GetAllAsync(string searchQuery = null)
         {
             var query = _context.Games.AsQueryable();
 
@@ -35,10 +35,7 @@ namespace Stream.Repository.Game
                     g.Platform.ToString().ToLower().Contains(lowerSearchQuery));
             }
 
-            return await query
-                .Skip((pageNumber - 1) * pageSize)
-                .Take(pageSize)
-                .ToListAsync();
+            return await query.ToListAsync();
         }
 
         public async Task<Stream.Models.Game> GetByIdAsync(int id)

@@ -13,7 +13,7 @@ namespace Stream.Repository.User
             _context = context;
         }
 
-        public async Task<List<Models.User>> GetAllAsync(string searchQuery = null, int pageNumber = 1, int pageSize = 10)
+        public async Task<List<Stream.Models.User>> GetAllAsync(string searchQuery = null)
         {
             var query = _context.Users.AsQueryable();
 
@@ -34,10 +34,7 @@ namespace Stream.Repository.User
                     (searchQuery.Contains("-") && DateSearchHelper.IsYearMonthMatch(u.CreatedAt, searchQuery)));
             }
 
-            return await query
-                .Skip((pageNumber - 1) * pageSize)
-                .Take(pageSize)
-                .ToListAsync();
+            return await query.ToListAsync();
         }
 
         public async Task<Stream.Models.User> GetByIdAsync(int id)
