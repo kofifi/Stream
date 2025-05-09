@@ -11,6 +11,20 @@ namespace Stream.Services
         {
             _repository = repository;
         }
+        
+        public async Task<List<User>> SearchUserAsync(string searchQuery, int pageNumber = 1, int pageSize = 10)
+        {
+            var users = await _repository.GetAllAsync(searchQuery);
+            return users
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
+                .ToList();
+        }
+
+        public Task<int?> GetTotalCountAsync(string searchQuery)
+        {
+            return _repository.GetTotalCountAsync(searchQuery);
+        }
         public async Task<User> GetByIdAsync(int id)
         {
             return await _repository.GetByIdAsync(id);
@@ -32,18 +46,5 @@ namespace Stream.Services
             await _repository.DeleteAsync(id);
         }
         
-        public async Task<List<User>> SearchUserAsync(string searchQuery, int pageNumber = 1, int pageSize = 10)
-        {
-            var users = await _repository.GetAllAsync(searchQuery);
-            return users
-                .Skip((pageNumber - 1) * pageSize)
-                .Take(pageSize)
-                .ToList();
-        }
-
-        public Task<int?> GetTotalCountAsync(string searchQuery)
-        {
-            return _repository.GetTotalCountAsync(searchQuery);
-        }
     }
 }

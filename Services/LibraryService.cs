@@ -31,6 +31,18 @@ namespace Stream.Services
                 .Take(pageSize)
                 .ToList();
         }
+        
+        public async Task<SelectList> GetUsersSelectListAsync(int? selectedUserId = null)
+        {
+            var users = await _userRepository.GetAllAsync();
+            return new SelectList(users, "Id", "Username", selectedUserId);
+        }
+
+        public async Task<SelectList> GetGamesSelectListAsync(int? selectedGameId = null)
+        {
+            var games = await _gameRepository.GetAllAsync();
+            return new SelectList(games, "Id", "Title", selectedGameId);
+        }
 
         public async Task<int?> GetTotalCountAsync(string searchQuery)
         {
@@ -56,17 +68,6 @@ namespace Stream.Services
         {
             await _libraryRepository.DeleteAsync(id);
         }
-
-        public async Task<SelectList> GetUsersSelectListAsync(int? selectedUserId = null)
-        {
-            var users = await _userRepository.GetAllAsync();
-            return new SelectList(users, "Id", "Username", selectedUserId);
-        }
-
-        public async Task<SelectList> GetGamesSelectListAsync(int? selectedGameId = null)
-        {
-            var games = await _gameRepository.GetAllAsync();
-            return new SelectList(games, "Id", "Title", selectedGameId);
-        }
+        
     }
 }
