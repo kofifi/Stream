@@ -1,54 +1,44 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Stream.Models;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Mvc;
 using Stream.Services.Interfaces;
-using System.Threading.Tasks;
+using Stream.ViewModels.Dto;
+using Stream.ViewModels.ViewModels;
 
 namespace Stream.Controllers;
 
 public class UserController : Controller
 {
     private readonly IUserService _userService;
+    private readonly IMapper _mapper;
 
-    public UserController(IUserService userService)
+    public UserController(IUserService userService, IMapper mapper)
     {
         _userService = userService;
+        _mapper = mapper;
     }
 
     [HttpGet]
-    public IActionResult Search()
+    public async Task<IActionResult> Index(string searchQuery, int pageNumber = 1, int pageSize = 10)
     {
-        return View();
-    }
+        var users = await _userService.SearchUserAsync(searchQuery, pageNumber, pageSize);
+        var totalUsers = await _userService.GetTotalCountAsync(searchQuery);
 
-    [HttpPost]
-    public async Task<IActionResult> Search(string searchQuery)
-    {
-        if (string.IsNullOrEmpty(searchQuery))
+        var viewModel = new UserViewModel
         {
-            return RedirectToAction(nameof(Index));
+            Users = _mapper.Map<IEnumerable<UserDto>>(users),
+            SearchQuery = searchQuery,
+            CurrentPage = pageNumber,
+            PageSize = pageSize,
+            TotalUsers = totalUsers ?? 0
+        };
+
+        if (IsAjaxRequest())
+        {
+            return PartialView("_UserTablePartial", viewModel.Users);
         }
 
-        return RedirectToAction(nameof(Index), new { searchQuery });
+        return View(viewModel);
     }
-
- [HttpGet]
-public async Task<IActionResult> Index(string searchQuery, int pageNumber = 1, int pageSize = 10)
-{
-    var users = await _userService.SearchUserAsync(searchQuery, pageNumber, pageSize);
-    var totalUsers = await _userService.GetTotalCountAsync(searchQuery);
-
-    ViewData["SearchQuery"] = searchQuery;
-    ViewData["CurrentPage"] = pageNumber;
-    ViewData["PageSize"] = pageSize;
-    ViewData["TotalUsers"] = totalUsers;
-
-    if (IsAjaxRequest())
-    {
-        return PartialView("_UserTablePartial", users);
-    }
-
-    return View(users);
-}
 
     public bool IsAjaxRequest()
     {
@@ -69,13 +59,14 @@ public async Task<IActionResult> Index(string searchQuery, int pageNumber = 1, i
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Create(User user)
+    public async Task<IActionResult> Create(UserDto userDto)
     {
         if (!ModelState.IsValid)
         {
-            return View(user);
+            return View(userDto);
         }
 
+        var user = _mapper.Map<Stream.Models.User>(userDto);
         await _userService.AddAsync(user);
         return RedirectToAction(nameof(Index));
     }
@@ -89,23 +80,25 @@ public async Task<IActionResult> Index(string searchQuery, int pageNumber = 1, i
             return NotFound();
         }
 
-        return View(user);
+        var userDto = _mapper.Map<UserDto>(user);
+        return View(userDto);
     }
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Edit(int id, User user)
+    public async Task<IActionResult> Edit(int id, UserDto userDto)
     {
-        if (id != user.Id)
+        if (id != userDto.Id)
         {
             return NotFound();
         }
 
         if (!ModelState.IsValid)
         {
-            return View(user);
+            return View(userDto);
         }
 
+        var user = _mapper.Map<Stream.Models.User>(userDto);
         await _userService.UpdateAsync(user);
         return RedirectToAction(nameof(Index));
     }
@@ -119,7 +112,8 @@ public async Task<IActionResult> Index(string searchQuery, int pageNumber = 1, i
             return NotFound();
         }
 
-        return View(user);
+        var userDto = _mapper.Map<UserDto>(user);
+        return View(userDto);
     }
 
     [HttpPost, ActionName("Delete")]

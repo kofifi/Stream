@@ -1,5 +1,5 @@
 ﻿@using Microsoft.AspNetCore.Mvc.TagHelpers
-@model Stream.Models.Game
+@model Stream.ViewModels.ViewModels.GameViewModel
 
 @{
     ViewData["Title"] = "Dodaj grę";
@@ -9,28 +9,30 @@
     <h2 class="mb-3">Dodaj grę</h2>
 
     <form asp-action="Create" method="post">
+        <input type="hidden" asp-for="Game.Id" />
         <div class="form-group">
-            <label asp-for="Title" class="control-label"></label>
-            <input asp-for="Title" class="form-control" />
-            <span asp-validation-for="Title" class="text-danger"></span>
+            <label asp-for="Game.Title" class="control-label"></label>
+            <input asp-for="Game.Title" class="form-control" />
+            <span asp-validation-for="Game.Title" class="text-danger"></span>
         </div>
         <div class="form-group">
-            <label asp-for="ReleaseDate" class="control-label"></label>
-            <input asp-for="ReleaseDate" class="form-control" />
-            <span asp-validation-for="ReleaseDate" class="text-danger"></span>
+            <label asp-for="Game.ReleaseDate" class="control-label"></label>
+            <input asp-for="Game.ReleaseDate" class="form-control" />
+            <span asp-validation-for="Game.ReleaseDate" class="text-danger"></span>
         </div>
         <div class="form-group">
-            <label asp-for="Platform" class="control-label"></label>
-            <select asp-for="Platform" class="form-control" asp-items="Html.GetEnumSelectList<Stream.Models.Platform>()"></select>
-            <span asp-validation-for="Platform" class="text-danger"></span>
+            <label asp-for="Game.Platform" class="control-label"></label>
+            <select asp-for="Game.Platform" class="form-control" asp-items="Model.Platforms"></select>
+            <span asp-validation-for="Game.Platform" class="text-danger"></span>
         </div>
         <div class="form-group">
-            <label asp-for="Genre" class="control-label"></label>
-            <select asp-for="Genre" class="form-control" asp-items="Html.GetEnumSelectList<Stream.Models.Genre>()"></select>
-            <span asp-validation-for="Genre" class="text-danger"></span>
+            <label asp-for="Game.Genre" class="control-label"></label>
+            <select asp-for="Game.Genre" class="form-control" asp-items="Model.Genres"></select>
+            <span asp-validation-for="Game.Genre" class="text-danger"></span>
         </div>
         <div class="form-group mt-3">
             <input type="submit" value="Dodaj" class="btn btn-primary" />
+            <a asp-action="Index" class="btn btn-secondary">Powrót</a>
         </div>
     </form>
 </div>

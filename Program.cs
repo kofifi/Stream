@@ -5,6 +5,7 @@ using Stream.Repository.User;
 using Stream.Repository.Library;
 using Stream.Services;
 using Stream.Services.Interfaces;
+using Stream.Mappings;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -20,6 +21,9 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IGameRepository, GameRepository>();
 builder.Services.AddScoped<ILibraryRepository, LibraryRepository>();
+
+// Configure AutoMapper
+builder.Services.AddAutoMapper(typeof(MappingProfile));
 
 // Services
 builder.Services.AddScoped<IGameService, GameService>();

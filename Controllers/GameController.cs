@@ -1,34 +1,22 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Stream.Models;
+using Stream.ViewModels.Dto;
+using Stream.ViewModels.ViewModels;
 using Stream.Services.Interfaces;
-using System.Threading.Tasks;
 
 namespace Stream.Controllers
 {
     public class GameController : Controller
     {
         private readonly IGameService _gameService;
+        private readonly IMapper _mapper;
 
-        public GameController(IGameService gameService)
+        public GameController(IGameService gameService, IMapper mapper)
         {
             _gameService = gameService;
-        }
-
-        [HttpGet]
-        public IActionResult Search()
-        {
-            return View();
-        }
-
-        [HttpPost]
-        public async Task<IActionResult> Search(string searchQuery)
-        {
-            if (string.IsNullOrEmpty(searchQuery))
-            {
-                return RedirectToAction(nameof(Index));
-            }
-
-            return RedirectToAction(nameof(Index), new { searchQuery });
+            _mapper = mapper;
         }
 
         [HttpGet]
@@ -37,45 +25,47 @@ namespace Stream.Controllers
             var games = await _gameService.SearchGamesAsync(searchQuery, pageNumber, pageSize);
             var totalGames = await _gameService.GetTotalCountAsync(searchQuery);
 
-            ViewData["SearchQuery"] = searchQuery;
-            ViewData["CurrentPage"] = pageNumber;
-            ViewData["PageSize"] = pageSize;
-            ViewData["TotalGames"] = totalGames;
+            var viewModel = new GameViewModel
+            {
+                Games = _mapper.Map<IEnumerable<GameDto>>(games),
+                SearchQuery = searchQuery,
+                CurrentPage = pageNumber,
+                PageSize = pageSize,
+                TotalGames = totalGames ?? 0
+            };
 
             if (IsAjaxRequest())
             {
-                return PartialView("_GameTablePartial", games);
+                return PartialView("_GameTablePartial", viewModel.Games);
             }
 
-            return View(games);
-        }
-
-        public bool IsAjaxRequest()
-        {
-            return Request.Headers["X-Requested-With"] == "XMLHttpRequest";
-        }
-
-        [HttpPost]
-        public IActionResult ResetSearch()
-        {
-            return RedirectToAction(nameof(Index), new { searchQuery = string.Empty });
+            return View(viewModel);
         }
 
         [HttpGet]
         public IActionResult Create()
         {
-            return View();
+            var viewModel = new GameViewModel
+            {
+                Platforms = GetPlatforms(),
+                Genres = GetGenres()
+            };
+
+            return View(viewModel);
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(Game game)
+        public async Task<IActionResult> Create(GameViewModel viewModel)
         {
             if (!ModelState.IsValid)
             {
-                return View(game);
+                viewModel.Platforms = GetPlatforms();
+                viewModel.Genres = GetGenres();
+                return View(viewModel);
             }
 
+            var game = _mapper.Map<Stream.Models.Game>(viewModel.Game);
             await _gameService.AddAsync(game);
             return RedirectToAction(nameof(Index));
         }
@@ -88,23 +78,34 @@ namespace Stream.Controllers
             {
                 return NotFound();
             }
-            return View(game);
+
+            var viewModel = new GameViewModel
+            {
+                Game = _mapper.Map<GameDto>(game),
+                Platforms = GetPlatforms(),
+                Genres = GetGenres()
+            };
+
+            return View(viewModel);
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, Game game)
+        public async Task<IActionResult> Edit(int id, GameViewModel viewModel)
         {
-            if (id != game.Id)
+            if (id != viewModel.Game.Id)
             {
                 return NotFound();
             }
 
             if (!ModelState.IsValid)
             {
-                return View(game);
+                viewModel.Platforms = GetPlatforms();
+                viewModel.Genres = GetGenres();
+                return View(viewModel);
             }
 
+            var game = _mapper.Map<Stream.Models.Game>(viewModel.Game);
             await _gameService.UpdateAsync(game);
             return RedirectToAction(nameof(Index));
         }
@@ -117,7 +118,9 @@ namespace Stream.Controllers
             {
                 return NotFound();
             }
-            return View(game);
+
+            var gameDto = _mapper.Map<GameDto>(game);
+            return View(gameDto);
         }
 
         [HttpPost, ActionName("Delete")]
@@ -126,6 +129,25 @@ namespace Stream.Controllers
         {
             await _gameService.DeleteAsync(id);
             return RedirectToAction(nameof(Index));
+        }
+
+        private IEnumerable<SelectListItem> GetPlatforms()
+        {
+            return Enum.GetValues(typeof(Platform))
+                .Cast<Platform>()
+                .Select(p => new SelectListItem { Value = p.ToString(), Text = p.ToString() });
+        }
+
+        private IEnumerable<SelectListItem> GetGenres()
+        {
+            return Enum.GetValues(typeof(Genre))
+                .Cast<Genre>()
+                .Select(g => new SelectListItem { Value = g.ToString(), Text = g.ToString() });
+        }
+
+        public bool IsAjaxRequest()
+        {
+            return Request.Headers["X-Requested-With"] == "XMLHttpRequest";
         }
     }
 }
