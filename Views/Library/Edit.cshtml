@@ -1,5 +1,5 @@
 ﻿@using Microsoft.AspNetCore.Mvc.TagHelpers
-@model Stream.Models.Library
+@model Stream.ViewModels.ViewModels.LibraryViewModel
 
 @{
     ViewData["Title"] = "Edytuj bibliotekę";
@@ -9,22 +9,22 @@
     <h2 class="mb-3">Edytuj bibliotekę</h2>
 
     <form asp-action="Edit" method="post">
-        <input type="hidden" asp-for="Id" />
+        <input type="hidden" asp-for="Libraries.FirstOrDefault()!.Id" />
 
         <div class="form-group">
             <label class="control-label">Użytkownik</label>
-            <input class="form-control" value="@Model.User?.Username" readonly />
+            <input class="form-control" value="@Model.Libraries.FirstOrDefault()?.User?.Username" readonly />
         </div>
 
         <div class="form-group">
             <label class="control-label">Gra</label>
-            <input class="form-control" value="@Model.Game?.Title" readonly />
+            <input class="form-control" value="@Model.Libraries.FirstOrDefault()?.Game?.Title" readonly />
         </div>
 
         <div class="form-group">
-            <label asp-for="Status" class="control-label">Status</label>
-            <select asp-for="Status" class="form-control" asp-items="ViewBag.Status"></select>
-            <span asp-validation-for="Status" class="text-danger"></span>
+            <label asp-for="Libraries.FirstOrDefault()!.Status" class="control-label">Status</label>
+            <select asp-for="Libraries.FirstOrDefault()!.Status" class="form-control" asp-items="ViewBag.Status"></select>
+            <span asp-validation-for="Libraries.FirstOrDefault()!.Status" class="text-danger"></span>
         </div>
 
         <div class="form-group mt-3">

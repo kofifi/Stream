@@ -1,6 +1,5 @@
 ﻿using AutoMapper;
 using Stream.Models;
-using Stream.ViewModels;
 using Stream.ViewModels.Dto;
 
 namespace Stream.Mappings
@@ -9,11 +8,9 @@ namespace Stream.Mappings
     {
         public MappingProfile()
         {
-            CreateMap<User, UserDto>();
-            CreateMap<UserDto, User>();
-            
-            CreateMap<Game, GameDto>();
-            CreateMap<GameDto, Game>();
+            CreateMap<User, UserDto>().ReverseMap();
+            CreateMap<Game, GameDto>().ReverseMap();
+            CreateMap<Library, LibraryDto>().ReverseMap();
         }
     }
 }

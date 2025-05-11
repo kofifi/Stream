@@ -1,5 +1,5 @@
 ﻿@using Microsoft.AspNetCore.Mvc.TagHelpers
-@model Stream.Models.Library
+@model Stream.ViewModels.ViewModels.LibraryViewModel
 
 @{
     ViewData["Title"] = "Dodaj grę do biblioteki użytkownika";
@@ -7,19 +7,21 @@
 
 <h2>@ViewData["Title"]</h2>
 
-<form asp-action="Create">
+<form asp-action="Create" method="post">
     <div class="form-group">
-        <label asp-for="UserId" class="control-label">Użytkownik</label>
-        <select asp-for="UserId" class="form-control" asp-items="ViewBag.Users"></select>
+        <label asp-for="Libraries.FirstOrDefault()!.UserId" class="control-label">Użytkownik</label>
+        <select asp-for="Libraries.FirstOrDefault()!.UserId" class="form-control" asp-items="ViewBag.Users"></select>
+        <span asp-validation-for="Libraries.FirstOrDefault()!.UserId" class="text-danger"></span>
     </div>
     <div class="form-group">
-        <label asp-for="GameId" class="control-label">Gra</label>
-        <select asp-for="GameId" class="form-control" asp-items="ViewBag.Games"></select>
+        <label asp-for="Libraries.FirstOrDefault()!.GameId" class="control-label">Gra</label>
+        <select asp-for="Libraries.FirstOrDefault()!.GameId" class="form-control" asp-items="ViewBag.Games"></select>
+        <span asp-validation-for="Libraries.FirstOrDefault()!.GameId" class="text-danger"></span>
     </div>
     <div class="form-group">
-        <label asp-for="Status" class="control-label">Status</label>
-        <select asp-for="Status" class="form-control" asp-items="Html.GetEnumSelectList<Stream.Models.Status>()"></select>
-        <span asp-validation-for="Status" class="text-danger"></span>
+        <label asp-for="Libraries.FirstOrDefault()!.Status" class="control-label">Status</label>
+        <select asp-for="Libraries.FirstOrDefault()!.Status" class="form-control" asp-items="Html.GetEnumSelectList<Stream.Models.Status>()"></select>
+        <span asp-validation-for="Libraries.FirstOrDefault()!.Status" class="text-danger"></span>
     </div>
     <div class="form-group">
         <input type="submit" value="Dodaj" class="btn btn-primary" />
