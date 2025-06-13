@@ -4,9 +4,6 @@ using Stream.Repository.Game;
 using Stream.Repository.Library;
 using Stream.Repository.User;
 using Stream.Services.Interfaces;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace Stream.Services
 {
