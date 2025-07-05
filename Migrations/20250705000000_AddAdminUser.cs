@@ -31,12 +31,14 @@ namespace Stream.Migrations
                 EmailConfirmed = true,
                 SecurityStamp = "00000000-0000-0000-0000-000000000002",
                 ConcurrencyStamp = "00000000-0000-0000-0000-000000000003",
-                PasswordHash = "AQAAAAIAAYagAAAAELiRGCG2l9VmOAXoJ1V8LojRxurx8WcN6iK3PaY5PQExampleHash==",
                 PhoneNumberConfirmed = false,
                 TwoFactorEnabled = false,
                 LockoutEnabled = false,
                 AccessFailedCount = 0
             };
+
+            var hasher = new PasswordHasher<StreamUser>();
+            user.PasswordHash = hasher.HashPassword(user, "Admin123!");
 
             migrationBuilder.InsertData(
                 table: "AspNetUsers",
