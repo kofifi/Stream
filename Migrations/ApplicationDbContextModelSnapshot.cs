@@ -41,6 +41,15 @@ namespace Stream.Migrations
                         .HasDatabaseName("RoleNameIndex");
 
                     b.ToTable("AspNetRoles", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = "26f87a0c-1d8d-4e59-9fdf-111111111111",
+                            Name = "Admin",
+                            NormalizedName = "ADMIN",
+                            ConcurrencyStamp = "00000000-0000-0000-0000-000000000001"
+                        });
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -126,6 +135,13 @@ namespace Stream.Migrations
                     b.HasIndex("RoleId");
 
                     b.ToTable("AspNetUserRoles", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            UserId = "95cb5bf2-3d4a-4c5a-8f53-222222222222",
+                            RoleId = "26f87a0c-1d8d-4e59-9fdf-111111111111"
+                        });
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
@@ -211,6 +227,26 @@ namespace Stream.Migrations
                         .HasDatabaseName("UserNameIndex");
 
                     b.ToTable("AspNetUsers", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = "95cb5bf2-3d4a-4c5a-8f53-222222222222",
+                            UserName = "admin@stream.com",
+                            NormalizedUserName = "ADMIN@STREAM.COM",
+                            Email = "admin@stream.com",
+                            NormalizedEmail = "ADMIN@STREAM.COM",
+                            EmailConfirmed = true,
+                            PasswordHash = "AQAAAAIAAYagAAAAELiRGCG2l9VmOAXoJ1V8LojRxurx8WcN6iK3PaY5PQExampleHash==",
+                            SecurityStamp = "00000000-0000-0000-0000-000000000002",
+                            ConcurrencyStamp = "00000000-0000-0000-0000-000000000003",
+                            PhoneNumber = (string)null,
+                            PhoneNumberConfirmed = false,
+                            TwoFactorEnabled = false,
+                            LockoutEnd = (DateTimeOffset?)null,
+                            LockoutEnabled = false,
+                            AccessFailedCount = 0
+                        });
                 });
 
             modelBuilder.Entity("Stream.Models.Game", b =>
