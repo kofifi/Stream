@@ -8,8 +8,16 @@
         <td>@game.Genre</td>
         <td>@game.ReleaseDate?.ToString("yyyy-MM-dd HH:mm")</td>
         <td>
-            <a class="btn btn-primary" href="@Url.Action("Edit", "Game", new { id = game.Id })">Edit</a>
-            <a class="btn btn-danger" href="@Url.Action("Delete", "Game", new { id = game.Id })">Delete</a>
+            @if (User.IsInRole("Admin"))
+            {
+                <a class="btn btn-primary" href="@Url.Action("Edit", "Game", new { id = game.Id })">Edit</a>
+                <a class="btn btn-danger" href="@Url.Action("Delete", "Game", new { id = game.Id })">Delete</a>
+            }
+            else
+            {
+                <button class="btn btn-primary" disabled title="Brak dostępu">Edit</button>
+                <button class="btn btn-danger" disabled title="Brak dostępu">Delete</button>
+            }
         </td>
     </tr>
 }

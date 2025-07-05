@@ -7,6 +7,8 @@ using Stream.Services;
 using Stream.Services.Interfaces;
 using Stream.Areas.Identity.Data;
 using Microsoft.AspNetCore.Identity;
+using Stream.Helpers;
+using Microsoft.Extensions.DependencyInjection;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -24,6 +26,7 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 builder.Services.AddDefaultIdentity<StreamUser>(options => options.SignIn.RequireConfirmedAccount = false)
+    .AddRoles<IdentityRole>()
     .AddEntityFrameworkStores<ApplicationDbContext>();
 
 // Builders for repositories
@@ -37,6 +40,19 @@ builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<ILibraryService, LibraryService>();
 
 var app = builder.Build();
+
+// Seed default roles
+using (var scope = app.Services.CreateScope())
+{
+    var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+    foreach (var role in new[] { Roles.Admin, Roles.User })
+    {
+        if (!await roleManager.RoleExistsAsync(role))
+        {
+            await roleManager.CreateAsync(new IdentityRole(role));
+        }
+    }
+}
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())

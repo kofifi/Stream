@@ -8,8 +8,16 @@
         <td>@library.Game?.Title</td>
         <td>@library.Status</td>
         <td>
-            <a class="btn btn-primary" href="@Url.Action("Edit", "Library", new { id = library.Id })">Edit</a>
-            <a class="btn btn-danger" href="@Url.Action("Delete", "Library", new { id = library.Id })">Delete</a>
+            @if (User.IsInRole("Admin"))
+            {
+                <a class="btn btn-primary" href="@Url.Action("Edit", "Library", new { id = library.Id })">Edit</a>
+                <a class="btn btn-danger" href="@Url.Action("Delete", "Library", new { id = library.Id })">Delete</a>
+            }
+            else
+            {
+                <button class="btn btn-primary" disabled title="Brak dostępu">Edit</button>
+                <button class="btn btn-danger" disabled title="Brak dostępu">Delete</button>
+            }
         </td>
     </tr>
 }

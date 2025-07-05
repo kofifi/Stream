@@ -2,6 +2,8 @@
 using Stream.Models;
 using Stream.Services.Interfaces;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
+using Stream.Helpers;
 
 namespace Stream.Controllers
 {
@@ -62,6 +64,7 @@ namespace Stream.Controllers
         }
 
         [HttpGet]
+        [Authorize(Roles = Roles.Admin)]
         public IActionResult Create()
         {
             return View();
@@ -69,6 +72,7 @@ namespace Stream.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = Roles.Admin)]
         public async Task<IActionResult> Create(Game game)
         {
             if (!ModelState.IsValid)
@@ -81,6 +85,7 @@ namespace Stream.Controllers
         }
 
         [HttpGet]
+        [Authorize(Roles = Roles.Admin)]
         public async Task<IActionResult> Edit(int id)
         {
             var game = await _gameService.GetByIdAsync(id);
@@ -93,6 +98,7 @@ namespace Stream.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = Roles.Admin)]
         public async Task<IActionResult> Edit(int id, Game game)
         {
             if (id != game.Id)
@@ -110,6 +116,7 @@ namespace Stream.Controllers
         }
 
         [HttpGet]
+        [Authorize(Roles = Roles.Admin)]
         public async Task<IActionResult> Delete(int id)
         {
             var game = await _gameService.GetByIdAsync(id);
@@ -122,6 +129,7 @@ namespace Stream.Controllers
 
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = Roles.Admin)]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             await _gameService.DeleteAsync(id);

@@ -19,9 +19,18 @@
 
     <div class="d-flex justify-content-between align-items-center mb-3">
         <h4>Gry</h4>
-        <a class="btn btn-primary" asp-action="Create">
-            <i class="bi bi-plus-circle"></i> Dodaj grę
-        </a>
+        @if (User.IsInRole("Admin"))
+        {
+            <a class="btn btn-primary" asp-action="Create">
+                <i class="bi bi-plus-circle"></i> Dodaj grę
+            </a>
+        }
+        else
+        {
+            <button class="btn btn-primary" disabled title="Brak dostępu">
+                <i class="bi bi-plus-circle"></i> Dodaj grę
+            </button>
+        }
     </div>
 
     <!-- Search Form -->
