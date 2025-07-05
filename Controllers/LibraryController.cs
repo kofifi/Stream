@@ -3,6 +3,8 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Stream.Models;
 using Stream.Services.Interfaces;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
+using Stream.Helpers;
 
 namespace Stream.Controllers
 {
@@ -39,6 +41,7 @@ namespace Stream.Controllers
             return View(libraries);
         }
 
+        [Authorize(Roles = Roles.Admin)]
         public async Task<IActionResult> Create()
         {
             ViewData["Users"] = await _libraryService.GetUsersSelectListAsync();
@@ -48,6 +51,7 @@ namespace Stream.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = Roles.Admin)]
         public async Task<IActionResult> Create(Library library)
         {
             if (ModelState.IsValid)
@@ -61,6 +65,7 @@ namespace Stream.Controllers
             return View(library);
         }
 
+        [Authorize(Roles = Roles.Admin)]
         public async Task<IActionResult> Edit(int id)
         {
             var library = await _libraryService.GetByIdAsync(id);
@@ -75,6 +80,7 @@ namespace Stream.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = Roles.Admin)]
         public async Task<IActionResult> Edit(int id, Library library)
         {
             if (id != library.Id)
@@ -92,6 +98,7 @@ namespace Stream.Controllers
             return RedirectToAction(nameof(Index));
         }
 
+        [Authorize(Roles = Roles.Admin)]
         public async Task<IActionResult> Delete(int id)
         {
             var library = await _libraryService.GetByIdAsync(id);
@@ -105,6 +112,7 @@ namespace Stream.Controllers
 
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = Roles.Admin)]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             await _libraryService.DeleteAsync(id);

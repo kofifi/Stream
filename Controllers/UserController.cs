@@ -2,6 +2,8 @@
 using Stream.Models;
 using Stream.Services.Interfaces;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
+using Stream.Helpers;
 
 namespace Stream.Controllers;
 
@@ -62,6 +64,7 @@ public async Task<IActionResult> Index(string searchQuery, int pageNumber = 1, i
     }
 
     [HttpGet]
+    [Authorize(Roles = Roles.Admin)]
     public IActionResult Create()
     {
         return View();
@@ -69,6 +72,7 @@ public async Task<IActionResult> Index(string searchQuery, int pageNumber = 1, i
 
     [HttpPost]
     [ValidateAntiForgeryToken]
+    [Authorize(Roles = Roles.Admin)]
     public async Task<IActionResult> Create(User user)
     {
         if (!ModelState.IsValid)
@@ -81,6 +85,7 @@ public async Task<IActionResult> Index(string searchQuery, int pageNumber = 1, i
     }
 
     [HttpGet]
+    [Authorize(Roles = Roles.Admin)]
     public async Task<IActionResult> Edit(int id)
     {
         var user = await _userService.GetByIdAsync(id);
@@ -94,6 +99,7 @@ public async Task<IActionResult> Index(string searchQuery, int pageNumber = 1, i
 
     [HttpPost]
     [ValidateAntiForgeryToken]
+    [Authorize(Roles = Roles.Admin)]
     public async Task<IActionResult> Edit(int id, User user)
     {
         if (id != user.Id)
@@ -111,6 +117,7 @@ public async Task<IActionResult> Index(string searchQuery, int pageNumber = 1, i
     }
 
     [HttpGet]
+    [Authorize(Roles = Roles.Admin)]
     public async Task<IActionResult> Delete(int id)
     {
         var user = await _userService.GetByIdAsync(id);
@@ -124,6 +131,7 @@ public async Task<IActionResult> Index(string searchQuery, int pageNumber = 1, i
 
     [HttpPost, ActionName("Delete")]
     [ValidateAntiForgeryToken]
+    [Authorize(Roles = Roles.Admin)]
     public async Task<IActionResult> DeleteConfirmed(int id)
     {
         await _userService.DeleteAsync(id);

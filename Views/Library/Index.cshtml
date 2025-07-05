@@ -19,9 +19,18 @@
 
     <div class="d-flex justify-content-between align-items-center mb-3">
         <h4>Biblioteki</h4>
-        <a class="btn btn-primary" asp-action="Create">
-            <i class="bi bi-plus-circle"></i> Dodaj bibliotekę
-        </a>
+        @if (User.IsInRole("Admin"))
+        {
+            <a class="btn btn-primary" asp-action="Create">
+                <i class="bi bi-plus-circle"></i> Dodaj bibliotekę
+            </a>
+        }
+        else
+        {
+            <button class="btn btn-primary" disabled title="Brak dostępu">
+                <i class="bi bi-plus-circle"></i> Dodaj bibliotekę
+            </button>
+        }
     </div>
 
     <!-- Search Form -->
